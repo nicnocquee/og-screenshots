@@ -4,15 +4,6 @@ import { render } from 'ink'
 import meow from 'meow'
 import App from './app.js'
 
-function parseJson(optionValue: string) {
-  try {
-    return JSON.parse(optionValue)
-  } catch (error) {
-    console.error(`Error parsing JSON input for ${optionValue}:`, error)
-    return { width: 1200, height: 630 } // Default value in case of error
-  }
-}
-
 const cli = meow(
   `
   Usage
@@ -38,7 +29,7 @@ const cli = meow(
     importMeta: import.meta,
     flags: {
       url: { type: 'string', shortFlag: 'u', isRequired: true },
-      transform: { type: 'boolean', shortFlag: 't', default: false },
+      transformOrigin: { type: 'boolean', shortFlag: 't', default: true },
       timeout: { type: 'number', shortFlag: 'T', default: 180000 },
       extension: { type: 'string', shortFlag: 'e', default: 'webp' },
       concurrency: { type: 'number', shortFlag: 'c', default: 3 },
@@ -48,7 +39,6 @@ const cli = meow(
         type: 'string',
         shortFlag: 'r',
         default: JSON.stringify({ width: 1200, height: 630 }),
-        parse: parseJson,
       },
       outputDir: { type: 'string', shortFlag: 'o', default: './public/screenshots' },
       windowSize: { type: 'string', shortFlag: 'w', default: '1300,1300' },
@@ -61,4 +51,12 @@ const cli = meow(
   }
 )
 
-render(<App name={cli.flags.url} />)
+const inputURLOrigin = new URL(cli.flags.url).origin
+const { recommendedSize, ...rest } = cli.flags
+
+render(
+  <App inputURLOrigin={inputURLOrigin} recommendedSize={JSON.parse(recommendedSize)} {...rest} />,
+  {
+    exitOnCtrlC: true,
+  }
+)
