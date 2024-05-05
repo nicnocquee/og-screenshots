@@ -102,10 +102,14 @@ export async function takeScreenshots(
 
         onStart?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
 
-        const existing = await fs.stat(outputPath)
-        if (!overwrite && existing.isFile()) {
-          onSkip?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
-          return null
+        try {
+          const existing = await fs.stat(outputPath)
+          if (!overwrite && existing.isFile()) {
+            onSkip?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
+            return null
+          }
+        } catch (error) {
+          // ignore
         }
 
         onScreenshot?.(url, outputPath, 'start', transformOrigin ? theUrl.toString() : undefined)

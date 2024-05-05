@@ -42,7 +42,7 @@ export default function App({ url, ...rest }: Props) {
   const [didResizeWorks, setDidResizeWorks] = React.useState<string[]>([])
   const [willScreenshotWorks, setWillScreenshotWorks] = React.useState<string[]>([])
   const [didScreenshotWorks, setDidScreenshotWorks] = React.useState<string[]>([])
-  const [errorWorks, setErrorWorks] = React.useState<string[]>([])
+  const [errorWorks, setErrorWorks] = React.useState<string[][]>([])
   const [skippedWorks, setSkippedWorks] = React.useState<string[]>([])
   const [allFinished, setAllFinished] = React.useState<(string | null)[]>([])
 
@@ -81,8 +81,8 @@ export default function App({ url, ...rest }: Props) {
           (url, _outputPath, transformedUrl) => {
             setFinisedWorks((prev) => [...prev, transformedUrl || url])
           },
-          (url, _error, transformedUrl) => {
-            setErrorWorks((prev) => [...prev, transformedUrl || url])
+          (url, error, transformedUrl) => {
+            setErrorWorks((prev) => [...prev, [transformedUrl || url, error.toString()]])
           },
           (url, _outputPath, transformedUrl) => {
             setSkippedWorks((prev) => [...prev, transformedUrl || url])
@@ -106,7 +106,7 @@ export default function App({ url, ...rest }: Props) {
       {startedWorks.map(([url, outputPath]) => {
         const isFinished = finisedWorks.includes(url!)
         const isSkipped = skippedWorks.includes(url!)
-        const isError = errorWorks.includes(url!)
+        const isError = errorWorks.some(([theUrl]) => theUrl === url!)
         const isProcessing = !isFinished && !isError && !isSkipped
         const isScreenshotted = didScreenshotWorks.includes(url!)
         const isResized = didResizeWorks.includes(url!)
@@ -158,6 +158,16 @@ export default function App({ url, ...rest }: Props) {
             ' Skipped ' +
               skippedWorks.length +
               ' URLs because they already exist. Run the command with the --overwrite option to overwrite them.'}
+        </Text>
+      )}
+      {errorWorks.length > 0 && (
+        <Text>
+          ❌ Errors occurred while processing {errorWorks.length} URLs.
+          {errorWorks.map(([url, error]) => (
+            <Text key={url}>
+              {url}: {error}
+            </Text>
+          ))}
         </Text>
       )}
     </>
