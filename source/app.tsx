@@ -28,6 +28,7 @@ export default function App({ url, ...rest }: Props) {
   const [startedWorks, setStartedWorks] = React.useState<string[][]>([])
   const [finisedWorks, setFinisedWorks] = React.useState<string[]>([])
   const [errorWorks, setErrorWorks] = React.useState<string[]>([])
+  const [allFinished, setAllFinished] = React.useState<(string | null)[]>([])
 
   useEffect(() => {
     ;(async () => {
@@ -53,6 +54,9 @@ export default function App({ url, ...rest }: Props) {
           (url, _error, transformedUrl) => {
             setErrorWorks((prev) => [...prev, transformedUrl || url])
           },
+          (results) => {
+            setAllFinished(results)
+          },
           abortController
         )
       }
@@ -70,6 +74,9 @@ export default function App({ url, ...rest }: Props) {
           {url} {'->'} {outputPath}
         </Text>
       ))}
+      {allFinished && allFinished.length > 0 && (
+        <Text>✨ Finished processing {allFinished.length} URLs</Text>
+      )}
     </>
   )
 }

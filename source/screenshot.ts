@@ -46,6 +46,7 @@ export async function takeScreenshots(
   onStart?: (url: string, outputPath: string, transformedUrl?: string) => void,
   onSuccess?: (url: string, outputPath: string, transformedUrl?: string) => void,
   onError?: (url: string, error: Error, transformedUrl?: string) => void,
+  onFinishAll?: (results: (string | null)[]) => void,
   abortController?: AbortController
 ) {
   try {
@@ -82,11 +83,12 @@ export async function takeScreenshots(
       return null
     }
 
-    await pMap(urls, mapper, {
+    const results = await pMap(urls, mapper, {
       concurrency,
       // @ts-expect-error
       signal: AbortSignal.any([abortController?.signal, AbortSignal.timeout(timeout)]),
     })
+    onFinishAll?.(results)
   } catch (error) {}
 }
 
