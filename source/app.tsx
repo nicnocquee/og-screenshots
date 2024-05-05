@@ -26,10 +26,6 @@ process.on('SIGINT', () => {
   abortController.abort()
 })
 
-process.on('SIGKILL', () => {
-  abortController.abort()
-})
-
 process.on('SIGTERM', () => {
   abortController.abort()
 })
