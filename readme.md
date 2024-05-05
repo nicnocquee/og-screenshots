@@ -12,6 +12,11 @@ A CLI to take screenshots of websites and generate [open graph images](https://o
 - Take screenshot of a single URL
 - Take screenshots of multiple URLs from a sitemap or RSS feed
 
+## Requirements
+
+- Chrome browser
+- Node.js 16+
+
 ## Install
 
 ```bash
