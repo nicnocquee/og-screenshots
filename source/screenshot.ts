@@ -68,8 +68,18 @@ export async function takeScreenshots(
     overwrite: boolean
   },
   onStart?: (url: string, outputPath: string, transformedUrl?: string) => void,
-  onScreenshotted?: (url: string, outputPath: string, transformedUrl?: string) => void,
-  onResized?: (url: string, outputPath: string, transformedUrl?: string) => void,
+  onScreenshot?: (
+    url: string,
+    outputPath: string,
+    phase: 'start' | 'end',
+    transformedUrl?: string
+  ) => void,
+  onResize?: (
+    url: string,
+    outputPath: string,
+    phase: 'start' | 'end',
+    transformedUrl?: string
+  ) => void,
   onSuccess?: (url: string, outputPath: string, transformedUrl?: string) => void,
   onError?: (url: string, error: Error, transformedUrl?: string) => void,
   onSkip?: (url: string, outputPath: string, transformedUrl?: string) => void,
@@ -98,6 +108,7 @@ export async function takeScreenshots(
           return null
         }
 
+        onScreenshot?.(url, outputPath, 'start', transformOrigin ? theUrl.toString() : undefined)
         const command = `"${chromePath}" --headless=new --force-device-scale-factor=1 --screenshot="${outputPath}" --window-size=${windowSize} "${theUrl.toString()}"`
         await asyncExec(command, {
           timeout,
@@ -105,7 +116,7 @@ export async function takeScreenshots(
           signal: abortController?.signal,
         })
 
-        onScreenshotted?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
+        onScreenshot?.(url, outputPath, 'end', transformOrigin ? theUrl.toString() : undefined)
 
         if (abortController?.signal.aborted) {
           return null
@@ -113,13 +124,14 @@ export async function takeScreenshots(
 
         const imageCommand = `"${imageMagickPath}" ${outputPath} -gravity North -crop ${recommendedSize.width}x${recommendedSize.height}+0+0 +repage -quality ${quality} ${outputPath}`
 
+        onResize?.(url, outputPath, 'start', transformOrigin ? theUrl.toString() : undefined)
         // await new Promise((resolve) => setTimeout(resolve, 2000))
         await asyncExec(imageCommand, {
           timeout,
           killSignal: 'SIGKILL',
           signal: abortController?.signal,
         })
-        onResized?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
+        onResize?.(url, outputPath, 'end', transformOrigin ? theUrl.toString() : undefined)
 
         onSuccess?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
 

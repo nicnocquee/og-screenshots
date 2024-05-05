@@ -38,8 +38,10 @@ export default function App({ url, ...rest }: Props) {
   const [urls, setUrls] = React.useState<string[]>([])
   const [startedWorks, setStartedWorks] = React.useState<string[][]>([])
   const [finisedWorks, setFinisedWorks] = React.useState<string[]>([])
-  const [resizedWorks, setResizedWorks] = React.useState<string[]>([])
-  const [screenshottedWorks, setScreenshottedWorks] = React.useState<string[]>([])
+  const [willResizeWorks, setWillResizeWorks] = React.useState<string[]>([])
+  const [didResizeWorks, setDidResizeWorks] = React.useState<string[]>([])
+  const [willScreenshotWorks, setWillScreenshotWorks] = React.useState<string[]>([])
+  const [didScreenshotWorks, setDidScreenshotWorks] = React.useState<string[]>([])
   const [errorWorks, setErrorWorks] = React.useState<string[]>([])
   const [skippedWorks, setSkippedWorks] = React.useState<string[]>([])
   const [allFinished, setAllFinished] = React.useState<(string | null)[]>([])
@@ -62,11 +64,19 @@ export default function App({ url, ...rest }: Props) {
           (url, outputPath, transformedUrl) => {
             setStartedWorks((prev) => [...prev, [transformedUrl || url, outputPath]])
           },
-          (url, _outputPath, transformedUrl) => {
-            setScreenshottedWorks((prev) => [...prev, transformedUrl || url])
+          (url, _outputPath, phase, transformedUrl) => {
+            if (phase === 'start') {
+              setWillScreenshotWorks((prev) => [...prev, transformedUrl || url])
+            } else {
+              setDidScreenshotWorks((prev) => [...prev, transformedUrl || url])
+            }
           },
-          (url, _outputPath, transformedUrl) => {
-            setResizedWorks((prev) => [...prev, transformedUrl || url])
+          (url, _outputPath, phase, transformedUrl) => {
+            if (phase === 'start') {
+              setWillResizeWorks((prev) => [...prev, transformedUrl || url])
+            } else {
+              setDidResizeWorks((prev) => [...prev, transformedUrl || url])
+            }
           },
           (url, _outputPath, transformedUrl) => {
             setFinisedWorks((prev) => [...prev, transformedUrl || url])
@@ -98,8 +108,10 @@ export default function App({ url, ...rest }: Props) {
         const isSkipped = skippedWorks.includes(url!)
         const isError = errorWorks.includes(url!)
         const isProcessing = !isFinished && !isError && !isSkipped
-        const isScreenshotted = screenshottedWorks.includes(url!)
-        const isResized = resizedWorks.includes(url!)
+        const isScreenshotted = didScreenshotWorks.includes(url!)
+        const isResized = didResizeWorks.includes(url!)
+        const isWillResize = willResizeWorks.includes(url!)
+        const isWillScreenshot = willScreenshotWorks.includes(url!)
         return (
           <Box key={url} gap={1}>
             {isProcessing && <Spinner type="dots" />}
@@ -111,7 +123,9 @@ export default function App({ url, ...rest }: Props) {
                     ? 'red'
                     : isSkipped
                       ? 'yellow'
-                      : 'gray'
+                      : isWillScreenshot
+                        ? 'blue'
+                        : 'gray'
               }
             >
               {url}
@@ -121,7 +135,15 @@ export default function App({ url, ...rest }: Props) {
             </Text>
             <Text
               color={
-                isFinished || isResized ? 'green' : isError ? 'red' : isSkipped ? 'yellow' : 'gray'
+                isFinished || isResized
+                  ? 'green'
+                  : isError
+                    ? 'red'
+                    : isSkipped
+                      ? 'yellow'
+                      : isWillResize
+                        ? 'blue'
+                        : 'gray'
               }
             >
               {outputPath}
