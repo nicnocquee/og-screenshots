@@ -1,4 +1,4 @@
-# og-screenshots BETA
+# og-screenshots [BETA]
 
 A CLI to take screenshots of websites and generate [open graph images](https://ogp.me) from your own computer. Having a website with a screenshot as an open graph image is a great way to promote your website and attract more visitors.
 
@@ -18,10 +18,12 @@ A CLI to take screenshots of websites and generate [open graph images](https://o
 - [ImageMagick (convert)](https://formulae.brew.sh/formula/imagemagick)
 - [Node.js 16+](https://nodejs.org/en/)
 
+**Note that I only tested this on macOS.**
+
 ## Install
 
 ```bash
-$ npm install --global og-screenshots
+npm i -g og-screenshots
 ```
 
 Or you can also directly execute the command:
@@ -63,6 +65,10 @@ Run
 ```bash
 npx tsx source/cli.tsx --url "https://example.com"
 ```
+
+## Known issues
+
+- Sometimes the process hangs. You can try to kill the process manually.
 
 ## License
 
