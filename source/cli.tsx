@@ -3,14 +3,15 @@ import React from 'react'
 import { render } from 'ink'
 import meow from 'meow'
 import App from './app.js'
+import fs from 'fs'
 
 const cli = meow(
   `
   Usage
-    $ your-command [input]
+    $ og-screenshots [input]
 
   Options
-    --url, -u <type> Input URL (required)
+    --url, -u <type> Input URL (required). Can be a sitemap, RSS feed or a single URL. When using a sitemap or RSS feed, this command will automatically detect the URLs in the feed or sitemap and process them.
     --transform, -t Transform origin [Default: false]
     --timeout, -T <type> Timeout in milliseconds [Default: 180000]
     --extension, -e <type> File extension [Default: webp]
@@ -23,7 +24,7 @@ const cli = meow(
     --chrome-path, -p <type> Path to Chrome [Default: /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome]
 
   Examples
-    $ your-command --url "http://example.com"
+    $ og-screenshots --url "http://example.com"
 `,
   {
     importMeta: import.meta,
@@ -50,6 +51,15 @@ const cli = meow(
     },
   }
 )
+
+// check chrome path exists
+const chromePath = cli.flags.chromePath
+if (!fs.existsSync(chromePath)) {
+  console.error(
+    `Chrome not found at ${chromePath}. Please download Chrome browser first. Or set the path to the Chrome executable in the CLI options.`
+  )
+  process.exit(1)
+}
 
 const inputURLOrigin = new URL(cli.flags.url).origin
 const { recommendedSize, ...rest } = cli.flags
