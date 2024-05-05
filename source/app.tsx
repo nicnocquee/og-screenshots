@@ -7,6 +7,7 @@ type Props = {
   url: string
   outputDir: string
   chromePath: string
+  imageMagickPath: string
   extension: string
   timeout: number
   concurrency: number
@@ -21,6 +22,14 @@ type Props = {
 const abortController = new AbortController()
 
 process.on('SIGINT', () => {
+  abortController.abort()
+})
+
+process.on('SIGTERM', () => {
+  abortController.abort()
+})
+
+process.on('SIGHUP', () => {
   abortController.abort()
 })
 

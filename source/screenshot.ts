@@ -42,6 +42,7 @@ export async function takeScreenshots(
     urls,
     outputDir,
     chromePath,
+    imageMagickPath,
     extension,
     timeout,
     concurrency,
@@ -54,6 +55,7 @@ export async function takeScreenshots(
     urls: string[]
     outputDir: string
     chromePath: string
+    imageMagickPath: string
     extension: string
     timeout: number
     concurrency: number
@@ -88,7 +90,7 @@ export async function takeScreenshots(
         const command = `"${chromePath}" --headless=new --force-device-scale-factor=1 --screenshot="${outputPath}" --window-size=${windowSize} "${theUrl.toString()}"`
         await asyncExec(command)
 
-        const imageCommand = `convert ${outputPath} -gravity North -crop ${recommendedSize.width}x${recommendedSize.height}+0+0 +repage -quality ${quality} ${outputPath}`
+        const imageCommand = `"${imageMagickPath}" ${outputPath} -gravity North -crop ${recommendedSize.width}x${recommendedSize.height}+0+0 +repage -quality ${quality} ${outputPath}`
 
         // await new Promise((resolve) => setTimeout(resolve, 2000))
         await asyncExec(imageCommand)

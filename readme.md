@@ -14,13 +14,20 @@ A CLI to take screenshots of websites and generate [open graph images](https://o
 
 ## Requirements
 
-- Chrome browser
-- Node.js 16+
+- [Chrome browser](https://www.google.com/chrome/)
+- [ImageMagick (convert)](https://formulae.brew.sh/formula/imagemagick)
+- [Node.js 16+](https://nodejs.org/en/)
 
 ## Install
 
 ```bash
 $ npm install --global og-screenshots
+```
+
+Or you can also directly execute the command:
+
+```shell
+npx og-screenshots --url "https://example.com"
 ```
 
 ## CLI
@@ -40,7 +47,9 @@ $ npm install --global og-screenshots
     --recommended-size, -r <type> Recommended image size [Default: {"width":1200,"height":630}]
     --output-dir, -o <type> Output directory [Default: ./public/screenshots]
     --window-size, -w <type> Browser window size [Default: 1300,1300]
-    --chrome-path, -p <type> Path to Chrome [Default: /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome]
+    --chrome-path <type> Path to Chrome [Default: ${defaultChromePath}]
+    --imagemagick-path <type> Path to ImageMagick [Default: ${defaultImageMagickPath}]
+
 
   Examples
     $ og-screenshots --url "http://example.com"

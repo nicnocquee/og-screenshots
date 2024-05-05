@@ -18,6 +18,17 @@ const chromePaths = {
 // @ts-expect-error
 const defaultChromePath = chromePaths[os.platform()] || chromePaths['linux'] // Default to Linux path if unknown OS
 
+// Default paths for different operating systems
+const imageMagickPaths = {
+  darwin: '/opt/homebrew/bin/convert', // macOS
+  win32: 'C:\\Program Files\\ImageMagick-7.1.0-Q16\\convert.exe', // Windows
+  linux: '/usr/bin/convert', // Linux (may need adjustments based on distribution)
+} as const
+
+// Get default Chrome path based on the OS
+// @ts-expect-error
+const defaultImageMagickPath = imageMagickPaths[os.platform()] || imageMagickPaths['linux'] // Default to Linux path if unknown OS
+
 const cli = meow(
   `
   Usage
@@ -34,7 +45,8 @@ const cli = meow(
     --recommended-size, -r <type> Recommended image size [Default: {"width":1200,"height":630}]
     --output-dir, -o <type> Output directory [Default: ./public/screenshots]
     --window-size, -w <type> Browser window size [Default: 1300,1300]
-    --chrome-path, -p <type> Path to Chrome [Default: /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome]
+    --chrome-path <type> Path to Chrome [Default: ${defaultChromePath}]
+    --imagemagick-path <type> Path to ImageMagick [Default: ${defaultImageMagickPath}]
 
   Examples
     $ og-screenshots --url "http://example.com"
@@ -58,8 +70,11 @@ const cli = meow(
       windowSize: { type: 'string', shortFlag: 'w', default: '1300,1300' },
       chromePath: {
         type: 'string',
-        shortFlag: 'p',
         default: defaultChromePath,
+      },
+      imageMagickPath: {
+        type: 'string',
+        default: defaultImageMagickPath,
       },
     },
   }
@@ -69,18 +84,28 @@ const cli = meow(
 const chromePathToUse = path.resolve(cli.flags.chromePath)
 if (!fs.existsSync(chromePathToUse)) {
   console.error(
-    `Chrome not found at ${chromePathToUse}. Please download Chrome browser first. Or set the path to the Chrome executable in the CLI options.`
+    `Chrome not found at ${chromePathToUse}. Please download Chrome browser first https://www.google.com/chrome/. Or set the path to the Chrome executable in the CLI options.`
+  )
+  process.exit(1)
+}
+
+// check chrome path exists
+const imageMagickPathToUse = path.resolve(cli.flags.imageMagickPath)
+if (!fs.existsSync(imageMagickPathToUse)) {
+  console.error(
+    `ImageMagick (convert) not found at ${imageMagickPathToUse}. Please install ImageMagick first https://formulae.brew.sh/formula/imagemagick. Or set the path to the ImageMagick executable in the CLI options.`
   )
   process.exit(1)
 }
 
 const inputURLOrigin = new URL(cli.flags.url).origin
-const { recommendedSize, chromePath, ...rest } = cli.flags
+const { recommendedSize, chromePath, imageMagickPath, ...rest } = cli.flags
 
 render(
   <App
     inputURLOrigin={inputURLOrigin}
     chromePath={chromePathToUse}
+    imageMagickPath={imageMagickPathToUse}
     recommendedSize={JSON.parse(recommendedSize)}
     {...rest}
   />,
