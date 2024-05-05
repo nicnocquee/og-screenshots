@@ -99,14 +99,20 @@ export async function takeScreenshots(
         }
 
         const command = `"${chromePath}" --headless=new --force-device-scale-factor=1 --screenshot="${outputPath}" --window-size=${windowSize} "${theUrl.toString()}"`
-        await asyncExec(command)
+        await asyncExec(command, {
+          timeout,
+        })
 
         onScreenshotted?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
+
+        if (abortController?.signal.aborted) {
+          return null
+        }
 
         const imageCommand = `"${imageMagickPath}" ${outputPath} -gravity North -crop ${recommendedSize.width}x${recommendedSize.height}+0+0 +repage -quality ${quality} ${outputPath}`
 
         // await new Promise((resolve) => setTimeout(resolve, 2000))
-        await asyncExec(imageCommand)
+        await asyncExec(imageCommand, { timeout })
         onResized?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
 
         onSuccess?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
@@ -120,8 +126,7 @@ export async function takeScreenshots(
 
     const results = await pMap(urls, mapper, {
       concurrency,
-      // @ts-expect-error
-      signal: AbortSignal.any([abortController?.signal, AbortSignal.timeout(timeout)]),
+      signal: abortController?.signal,
     })
     onFinishAll?.(results)
   } catch (error) {}

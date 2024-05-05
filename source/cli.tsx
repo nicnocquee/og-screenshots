@@ -37,7 +37,7 @@ const cli = meow(
   Options
     --url, -u <type> Input URL (required). Can be a sitemap, RSS feed or a single URL. When using a sitemap or RSS feed, this command will automatically detect the URLs in the feed or sitemap and process them.
     --transform, -t Transform origin [Default: false]
-    --timeout, -T <type> Timeout in milliseconds [Default: 180000]
+    --timeout, -T <type> Timeout in milliseconds [Default: 60000]
     --extension, -e <type> File extension [Default: webp]
     --concurrency, -c <type> Concurrency level [Default: 3]
     --quality, -q <type> Image quality [Default: 100]
@@ -57,7 +57,7 @@ const cli = meow(
     flags: {
       url: { type: 'string', shortFlag: 'u', isRequired: true },
       transformOrigin: { type: 'boolean', shortFlag: 't', default: true },
-      timeout: { type: 'number', shortFlag: 'T', default: 180000 },
+      timeout: { type: 'number', shortFlag: 'T', default: 60000 },
       extension: { type: 'string', shortFlag: 'e', default: 'webp' },
       concurrency: { type: 'number', shortFlag: 'c', default: 3 },
       quality: { type: 'number', shortFlag: 'q', default: 100 },
