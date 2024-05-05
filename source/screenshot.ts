@@ -77,11 +77,11 @@ export async function takeScreenshots(
       const theUrl = transformOrigin ? replaceDomain(url, inputURLOrigin) : new URL(url)
       try {
         const pathname = theUrl.pathname
-        const paths = pathname.split('/')
-        paths.pop()
+        const paths = pathname.split('/').map((p) => sanitizeForFilePath(p))
+        const last = paths.pop()
         const theOutputDir = `${outputDir}${paths.join('/')}`
         await fs.mkdir(theOutputDir, { recursive: true })
-        const outputPath = `${outputDir}/${sanitizeForFilePath(pathname)}.${extension}`
+        const outputPath = `${theOutputDir}/${last || 'index'}.${extension}`
 
         onStart?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
 
