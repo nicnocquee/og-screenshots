@@ -51,6 +51,7 @@ export async function takeScreenshots(
     transformOrigin,
     inputURLOrigin,
     windowSize,
+    overwrite,
   }: {
     urls: string[]
     outputDir: string
@@ -64,10 +65,12 @@ export async function takeScreenshots(
     transformOrigin: boolean
     inputURLOrigin: string
     windowSize: string
+    overwrite: boolean
   },
   onStart?: (url: string, outputPath: string, transformedUrl?: string) => void,
   onSuccess?: (url: string, outputPath: string, transformedUrl?: string) => void,
   onError?: (url: string, error: Error, transformedUrl?: string) => void,
+  onSkip?: (url: string, outputPath: string, transformedUrl?: string) => void,
   onFinishAll?: (results: (string | null)[]) => void,
   abortController?: AbortController
 ) {
@@ -86,6 +89,12 @@ export async function takeScreenshots(
         const outputPath = `${theOutputDir}/${last || 'index'}.${extension}`
 
         onStart?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
+
+        const existing = await fs.stat(outputPath)
+        if (!overwrite && existing.isFile()) {
+          onSkip?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
+          return null
+        }
 
         const command = `"${chromePath}" --headless=new --force-device-scale-factor=1 --screenshot="${outputPath}" --window-size=${windowSize} "${theUrl.toString()}"`
         await asyncExec(command)

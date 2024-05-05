@@ -17,6 +17,7 @@ type Props = {
   inputURLOrigin: string
   windowSize: string
   maxScreenshots: number
+  overwrite: boolean
 }
 
 const abortController = new AbortController()
@@ -38,6 +39,7 @@ export default function App({ url, ...rest }: Props) {
   const [startedWorks, setStartedWorks] = React.useState<string[][]>([])
   const [finisedWorks, setFinisedWorks] = React.useState<string[]>([])
   const [errorWorks, setErrorWorks] = React.useState<string[]>([])
+  const [skippedWorks, setSkippedWorks] = React.useState<string[]>([])
   const [allFinished, setAllFinished] = React.useState<(string | null)[]>([])
 
   useEffect(() => {
@@ -64,6 +66,9 @@ export default function App({ url, ...rest }: Props) {
           (url, _error, transformedUrl) => {
             setErrorWorks((prev) => [...prev, transformedUrl || url])
           },
+          (url, _outputPath, transformedUrl) => {
+            setSkippedWorks((prev) => [...prev, transformedUrl || url])
+          },
           (results) => {
             setAllFinished(results)
             // sometimes the process is not exited
@@ -82,19 +87,26 @@ export default function App({ url, ...rest }: Props) {
       {urls.length > 0 && <Text>Processing {urls.length} URLs</Text>}
       {startedWorks.map(([url, outputPath]) => {
         const isFinished = finisedWorks.includes(url!)
+        const isSkipped = skippedWorks.includes(url!)
         const isError = errorWorks.includes(url!)
-        const isProcessing = !isFinished && !isError
+        const isProcessing = !isFinished && !isError && !isSkipped
         return (
           <Box key={url} gap={1}>
             {isProcessing && <Spinner type="dots" />}
-            <Text color={isFinished ? 'green' : isError ? 'red' : 'gray'}>
+            <Text color={isFinished ? 'green' : isError ? 'red' : isSkipped ? 'yellow' : 'gray'}>
               {url} {'->'} {outputPath}
             </Text>
           </Box>
         )
       })}
       {allFinished && allFinished.length > 0 && (
-        <Text>✨ Finished processing {allFinished.length} URLs</Text>
+        <Text>
+          ✨ Finished processing {allFinished.length} URLs.
+          {skippedWorks.length > 0 &&
+            ' Skipped ' +
+              skippedWorks.length +
+              ' URLs because they already exist. Run the command with the --overwrite option to overwrite them.'}
+        </Text>
       )}
     </>
   )

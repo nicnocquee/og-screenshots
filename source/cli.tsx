@@ -47,6 +47,7 @@ const cli = meow(
     --window-size, -w <type> Browser window size [Default: 1300,1300]
     --chrome-path <type> Path to Chrome [Default: ${defaultChromePath}]
     --imagemagick-path <type> Path to ImageMagick [Default: ${defaultImageMagickPath}]
+    --overwrite Overwrite existing files [Default: false]. By default, the command will not take screenshots if the output file already exists.
 
   Examples
     $ og-screenshots --url "http://example.com"
@@ -66,6 +67,7 @@ const cli = meow(
         shortFlag: 'r',
         default: JSON.stringify({ width: 1200, height: 630 }),
       },
+      overwrite: { type: 'boolean', default: false },
       outputDir: { type: 'string', shortFlag: 'o', default: './public/screenshots' },
       windowSize: { type: 'string', shortFlag: 'w', default: '1300,1300' },
       chromePath: {

@@ -47,10 +47,23 @@ npx og-screenshots --url "https://example.com"
     --recommended-size, -r <type> Recommended image size [Default: {"width":1200,"height":630}]
     --output-dir, -o <type> Output directory [Default: ./public/screenshots]
     --window-size, -w <type> Browser window size [Default: 1300,1300]
-    --chrome-path <type> Path to Chrome [Default: ${defaultChromePath}]
-    --imagemagick-path <type> Path to ImageMagick [Default: ${defaultImageMagickPath}]
+    --chrome-path <type> Path to Chrome [Default: detected Chrome path]
+    --imagemagick-path <type> Path to ImageMagick [Default: detected ImageMagick path]
+    --overwrite Overwrite existing files [Default: false]. By default, the command will not take screenshots if the output file already exists.
 
 
   Examples
     $ og-screenshots --url "http://example.com"
 ```
+
+## Development
+
+Run
+
+```bash
+npx tsx source/cli.tsx --url "https://example.com"
+```
+
+## License
+
+Affero General Public License v3.0
