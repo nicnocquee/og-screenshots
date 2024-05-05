@@ -68,6 +68,8 @@ export async function takeScreenshots(
     overwrite: boolean
   },
   onStart?: (url: string, outputPath: string, transformedUrl?: string) => void,
+  onScreenshotted?: (url: string, outputPath: string, transformedUrl?: string) => void,
+  onResized?: (url: string, outputPath: string, transformedUrl?: string) => void,
   onSuccess?: (url: string, outputPath: string, transformedUrl?: string) => void,
   onError?: (url: string, error: Error, transformedUrl?: string) => void,
   onSkip?: (url: string, outputPath: string, transformedUrl?: string) => void,
@@ -99,10 +101,13 @@ export async function takeScreenshots(
         const command = `"${chromePath}" --headless=new --force-device-scale-factor=1 --screenshot="${outputPath}" --window-size=${windowSize} "${theUrl.toString()}"`
         await asyncExec(command)
 
+        onScreenshotted?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
+
         const imageCommand = `"${imageMagickPath}" ${outputPath} -gravity North -crop ${recommendedSize.width}x${recommendedSize.height}+0+0 +repage -quality ${quality} ${outputPath}`
 
         // await new Promise((resolve) => setTimeout(resolve, 2000))
         await asyncExec(imageCommand)
+        onResized?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
 
         onSuccess?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
 
