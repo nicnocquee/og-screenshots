@@ -73,3 +73,7 @@ npx tsx source/cli.tsx --url "https://example.com"
 ## License
 
 Affero General Public License v3.0
+
+## Contact
+
+[Nico Prananta](https://twitter.com/2co_p)

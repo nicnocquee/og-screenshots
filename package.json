@@ -1,6 +1,6 @@
 {
   "name": "og-screenshots",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "license": "AGPL-3.0-only",
   "bin": "dist/cli.js",
   "type": "module",
@@ -17,33 +17,38 @@
     "utility"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf dist && tsc && npm run copy-files",
     "dev": "tsc --watch",
-    "test": "prettier --check . && xo && ava"
+    "test": "prettier --check . && xo && ava",
+    "copy-files": "copyfiles readme.md LICENSE dist/",
+    "prepublish": "npm run build"
   },
   "files": [
     "dist"
   ],
   "dependencies": {
+    "chalk": "^5.3.0",
     "ink": "^4.4.1",
     "ink-spinner": "^5.0.0",
     "meow": "^13.2.0",
-    "react": "^18.3.1",
     "p-map": "^7.0.2",
-    "sitemapper": "^3.2.8",
-    "chalk": "^5.3.0",
-    "rss-parser": "^3.13.0"
+    "react": "^18.3.1",
+    "rss-parser": "^3.13.0",
+    "sitemapper": "^3.2.8"
   },
   "devDependencies": {
     "@sindresorhus/tsconfig": "^5.0.0",
     "@types/react": "^18.3.1",
     "@vdemedes/prettier-config": "^2.0.1",
     "ava": "^6.1.2",
+    "concurrently": "^8.2.2",
+    "copyfiles": "^2.4.1",
     "eslint-config-xo-react": "^0.27.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.2",
     "ink-testing-library": "^3.0.0",
     "prettier": "^3.2.5",
+    "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.9.1",
     "typescript": "^5.4.5",
