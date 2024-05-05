@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
-import { Text } from 'ink'
+import { Box, Text } from 'ink'
 import { findUrls, takeScreenshots } from './screenshot.js'
+import Spinner from 'ink-spinner'
 
 type Props = {
   url: string
@@ -70,14 +71,19 @@ export default function App({ url, ...rest }: Props) {
   return (
     <>
       {urls.length > 0 && <Text>Processing {urls.length} URLs</Text>}
-      {startedWorks.map(([url, outputPath]) => (
-        <Text
-          key={url}
-          color={finisedWorks.includes(url!) ? 'green' : errorWorks.includes(url!) ? 'red' : 'gray'}
-        >
-          {url} {'->'} {outputPath}
-        </Text>
-      ))}
+      {startedWorks.map(([url, outputPath]) => {
+        const isFinished = finisedWorks.includes(url!)
+        const isError = errorWorks.includes(url!)
+        const isProcessing = !isFinished && !isError
+        return (
+          <Box key={url} gap={1}>
+            {isProcessing && <Spinner type="dots" />}
+            <Text color={isFinished ? 'green' : isError ? 'red' : 'gray'}>
+              {url} {'->'} {outputPath}
+            </Text>
+          </Box>
+        )
+      })}
       {allFinished && allFinished.length > 0 && (
         <Text>✨ Finished processing {allFinished.length} URLs</Text>
       )}
