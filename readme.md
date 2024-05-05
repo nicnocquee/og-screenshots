@@ -1,16 +1,16 @@
 # og-screenshots BETA
 
-A CLI to take screenshots of websites and generate [open graph images](https://ogp.me) from your own computer. Having a website with a screenshot as the open graph image is a great way to promote your website and attract more visitors.
+A CLI to take screenshots of websites and generate [open graph images](https://ogp.me) from your own computer. Having a website with a screenshot as an open graph image is a great way to promote your website and attract more visitors.
 
 ## Why?
 
-- Existing solutions are pricey and subscription based. You usually only need to generate the screenshots once. There's no need to pay for a monthly subscription.
-- Running your own open graph image generator in the cloud has cost too. Using serverless platform, you'll need to pay the computing cost. Using self-hosted server, you'll need to pay for the storage and bandwidth.
+- Existing solutions are expensive and subscription based. You usually only need to take the screenshots once. You don't have to pay for a monthly subscription.
+- Running your own open graph image generator in the cloud is also expensive. If you use a serverless platform, you'll have to pay for the computing power. If you use a self-hosted server, you'll have to pay for storage and bandwidth.
 
 ## Features
 
-- Take screenshot of a single URL
-- Take screenshots of multiple URLs from a sitemap or RSS feed
+- Screenshot a single URL
+- Capture screenshots of multiple URLs from a sitemap or RSS feed
 
 ## Requirements
 
