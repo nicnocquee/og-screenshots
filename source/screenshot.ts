@@ -12,9 +12,29 @@ const parser: Parser = new Parser()
 const asyncExec = util.promisify(exec)
 
 const replaceDomain = (url: string, newBase: string) => {
+  if (url === newBase) {
+    return new URL(url)
+  }
+
   const oldUrl = new URL(url)
+
+  if (oldUrl.origin === newBase) {
+    return oldUrl
+  }
+
   const newUrl = new URL(oldUrl.pathname + oldUrl.search, newBase)
   return newUrl
+}
+
+type FilePathString = string
+
+function sanitizeForFilePath(input: string): FilePathString {
+  return input
+    .normalize('NFKD') // Normalize Unicode characters
+    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+    .replace(/[<>:"\/\\|?*\x00-\x1F]/g, '-') // Replace unsafe characters
+    .replace(/\s+/g, '_') // Replace spaces with underscores
+    .trim() // Trim whitespace
 }
 
 export async function takeScreenshots(
@@ -61,12 +81,11 @@ export async function takeScreenshots(
         paths.pop()
         const theOutputDir = `${outputDir}${paths.join('/')}`
         await fs.mkdir(theOutputDir, { recursive: true })
-        const outputPath = `${outputDir}${pathname}.${extension}`
+        const outputPath = `${outputDir}/${sanitizeForFilePath(pathname)}.${extension}`
 
         onStart?.(url, outputPath, transformOrigin ? theUrl.toString() : undefined)
 
         const command = `${chromePath} --headless=new --force-device-scale-factor=1 --screenshot="${outputPath}" --window-size=${windowSize} "${theUrl.toString()}"`
-        // // console.log(`Started screenshot for: ${theUrl.toString()}`)
         await asyncExec(command)
 
         const imageCommand = `convert ${outputPath} -gravity North -crop ${recommendedSize.width}x${recommendedSize.height}+0+0 +repage -quality ${quality} ${outputPath}`

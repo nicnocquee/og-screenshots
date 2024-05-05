@@ -56,6 +56,10 @@ export default function App({ url, ...rest }: Props) {
           },
           (results) => {
             setAllFinished(results)
+            // sometimes the process is not exited
+            setTimeout(() => {
+              process.exit(0)
+            }, 2000)
           },
           abortController
         )
@@ -65,7 +69,7 @@ export default function App({ url, ...rest }: Props) {
 
   return (
     <>
-      <Text>Processing {urls.length} URLs</Text>
+      {urls.length > 0 && <Text>Processing {urls.length} URLs</Text>}
       {startedWorks.map(([url, outputPath]) => (
         <Text
           key={url}
