@@ -4,6 +4,19 @@ import { render } from 'ink'
 import meow from 'meow'
 import App from './app.js'
 import fs from 'fs'
+import path from 'path'
+import os from 'os'
+
+// Default paths for different operating systems
+const chromePaths = {
+  darwin: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', // macOS
+  win32: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe', // Windows
+  linux: '/usr/bin/google-chrome', // Linux (may need adjustments based on distribution)
+} as const
+
+// Get default Chrome path based on the OS
+// @ts-expect-error
+const defaultChromePath = chromePaths[os.platform()] || chromePaths['linux'] // Default to Linux path if unknown OS
 
 const cli = meow(
   `
@@ -46,26 +59,31 @@ const cli = meow(
       chromePath: {
         type: 'string',
         shortFlag: 'p',
-        default: `/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome`,
+        default: defaultChromePath,
       },
     },
   }
 )
 
 // check chrome path exists
-const chromePath = cli.flags.chromePath
-if (!fs.existsSync(chromePath)) {
+const chromePathToUse = path.resolve(cli.flags.chromePath)
+if (!fs.existsSync(chromePathToUse)) {
   console.error(
-    `Chrome not found at ${chromePath}. Please download Chrome browser first. Or set the path to the Chrome executable in the CLI options.`
+    `Chrome not found at ${chromePathToUse}. Please download Chrome browser first. Or set the path to the Chrome executable in the CLI options.`
   )
   process.exit(1)
 }
 
 const inputURLOrigin = new URL(cli.flags.url).origin
-const { recommendedSize, ...rest } = cli.flags
+const { recommendedSize, chromePath, ...rest } = cli.flags
 
 render(
-  <App inputURLOrigin={inputURLOrigin} recommendedSize={JSON.parse(recommendedSize)} {...rest} />,
+  <App
+    inputURLOrigin={inputURLOrigin}
+    chromePath={chromePathToUse}
+    recommendedSize={JSON.parse(recommendedSize)}
+    {...rest}
+  />,
   {
     exitOnCtrlC: true,
   }
