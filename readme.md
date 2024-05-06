@@ -18,7 +18,10 @@ A CLI to take screenshots of websites and generate [open graph images](https://o
 - [ImageMagick (convert)](https://formulae.brew.sh/formula/imagemagick)
 - [Node.js 16+](https://nodejs.org/en/)
 
-**Note that I only tested this on macOS.**
+Notes:
+
+- **Note that I only tested this on macOS.**
+- Chrome is required because I don't want to use [puppeteer](https://pptr.dev). Puppeteer automatically downloads a recent version of Chrome for Testing which can be ~170MB macOS, ~282MB Linux, or ~280MB Windows. That's a lot of bytes for doing just one thing. It turned out that the normal Chrome browser can be used for this task and majority of people already have it installed.
 
 ## Install
 
@@ -68,7 +71,7 @@ npx tsx source/cli.tsx --url "https://example.com"
 
 ## Known issues
 
-- Sometimes the process hangs. You can try to kill the process manually.
+- Sometimes the process hangs. You can try to kill the process manually. Anyone who knows how to fix this issue is welcome to contribute.
 
 ## License
 
