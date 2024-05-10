@@ -23,7 +23,8 @@
     "dev": "tsc --watch",
     "test": "prettier --check . && xo && ava",
     "copy-files": "copyfiles readme.md LICENSE dist/",
-    "prepublish": "npm run build"
+    "bump": "npm version patch --force",
+    "prepublishOnly": "npm run bump && npm run build"
   },
   "files": [
     "dist"
